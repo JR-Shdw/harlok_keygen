@@ -1,0 +1,56 @@
+#ifndef __CHAR_KEY_TOOLS_H__
+#define __CHAR_KEY_TOOLS_H__
+
+
+
+typedef struct _char_table *char_table;
+typedef struct _key_list key_list;
+
+
+
+struct _char_table
+{
+  char* data;
+  int len;
+  int alloc;
+};
+
+struct _key_list
+{
+  char* list;
+  int size;
+  int num;
+};
+
+extern key_list key_list_create(int size, int num);
+extern char_table key_table_create(int len, int alloc);
+extern int key_get_size();
+extern int key_get_number();
+extern int random_value(int to);
+extern void print_key(char_table key, int size);
+extern void print_list_debug(key_list L, int size ,int num);
+extern void key_gen(char_table key, char_table keymap, int size, int random_to );
+extern void table_destroy (char_table key);
+extern void list_destroy ( key_list data);
+extern void key_gen_store (key_list C ,char_table key, int size, int l);
+extern char* ASCII_key_set();
+extern void str_copy_to_char_table (char * str,char_table table);
+extern char_table int_to_char_table (int n);
+extern int char_table_to_int (char_table j);
+extern char_table char_table_input(void);
+extern void char_table_add (char_table A, char n);
+extern char_table empty_char_table_create (int alloc);
+
+extern char_table standard_empty_char_table_create (void);
+extern char_table ext_char_table_create (int len, int alloc);
+extern void char_table_set (char_table C, int i, char n);
+extern void ext_char_table_set (char_table T, int i, char n);
+extern void char_table_alloc_more (char_table T, int new_alloc);
+extern char_table get_secure_input();
+
+
+
+#endif
+
+
+
