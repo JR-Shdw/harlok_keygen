@@ -159,9 +159,10 @@ char_table_2D cli_get_int(char **args, int argn)
   int i, j, k = 0;
   
   char_table_2D int_args = ext_char_table_2D_create (0, 2);
+  /* FIX: cappait a 20 au lieu de 10 */
   if (argn > 10)
     {
-      argn= 20;
+      argn = 10;
     }
   for (i = 1; i < argn; i++)
     {
@@ -297,11 +298,12 @@ char_table ASCII_key_set_cli(char_table opt, char_table_2D ASCII)//cli version
 	      {
 		ASCII_set = 7;break;
 	      }
+	    else
+	      {
+		ASCII_set = 0;break;
+	      }
 	  }
-	else
-	  {
-	    ASCII_set = 0;break;
-	  }
+	ASCII_set = 0; break;
       }
     case 110: //n == 110
       {
@@ -335,6 +337,7 @@ char_table ASCII_key_set_cli(char_table opt, char_table_2D ASCII)//cli version
 		ASCII_set = 0; break;
 	      }
 	  }
+	ASCII_set = 0; break;
       }
     case 115: //s == 115
       {
@@ -368,6 +371,7 @@ char_table ASCII_key_set_cli(char_table opt, char_table_2D ASCII)//cli version
 		ASCII_set = 0; break;
 	      }
 	  }
+	ASCII_set = 0; break;
       }
     default:
       {
@@ -378,10 +382,19 @@ char_table ASCII_key_set_cli(char_table opt, char_table_2D ASCII)//cli version
 }
 
 
+/* FIX: utilise /dev/urandom au lieu de random() (PRNG faible + seed time) */
 int random_value (int to)
 {
-  long unsigned int randomA = random() % (to);
-  return randomA;
+  unsigned int randomA;
+  FILE *f = fopen("/dev/urandom", "rb");
+  if (f == NULL)
+    {
+      /* fallback sur random() si urandom indisponible */
+      return (int)(random() % to);
+    }
+  fread(&randomA, sizeof(randomA), 1, f);
+  fclose(f);
+  return (int)(randomA % to);
 }
       
 void print_key (char_table key, int size)
@@ -448,36 +461,33 @@ void str_copy_to_char_table(char * str,char_table table)
 
 char_table int_to_char_table (int n)
 {
-  {
-    int i = 0;
-    char_table T;
-    if (n == 0)
-      {
-	char* tmp;
-	tmp[0] = '0';
-	tmp[1] = '\0';
-	T = key_table_create(2,2);
-	T->data[0] = tmp[0];
-	T->data[1] = tmp[1];
-	tmp = NULL; return T;
-      }
-    else
-      {
-	char* tmp;
-	while (n != 0)
-	  {
-	    tmp[i] = ((n % 10) + '0');
-	    n /= 10;
-	    i++;
-	  }
-	T = key_table_create(strlen(tmp),strlen(tmp));
-	for(i=0; i< (int)strlen(tmp); i++)
-	  {
-	    T->data[i] =  tmp[(((int)strlen(tmp)-1)-i)];
-	  }
-	tmp = NULL; return T;
-      }
-  }
+  int i = 0;
+  char_table T;
+  if (n == 0)
+    {
+      T = key_table_create(1, 2);
+      T->data[0] = '0';
+      return T;
+    }
+  else
+    {
+      /* FIX: tmp etait un pointeur non alloue -> crash */
+      char tmp[12]; /* assez pour un int 32-bit */
+      int len;
+      while (n != 0)
+	{
+	  tmp[i] = ((n % 10) + '0');
+	  n /= 10;
+	  i++;
+	}
+      len = i;
+      T = key_table_create(len, len);
+      for(i = 0; i < len; i++)
+	{
+	  T->data[i] = tmp[(len - 1) - i];
+	}
+      return T;
+    }
 }
 
 int char_table_to_int (char_table j) /* assume j is an int */

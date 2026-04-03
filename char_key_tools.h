@@ -44,7 +44,7 @@ extern void print_list_debug(key_list L, int size ,int num);
 
 extern int random_value(int to);
 extern void key_gen(char_table key, char_table keymap, int size, int random_to );
-extern char_table ASCII_key_set();//a refaire
+extern char_table ASCII_key_set(char_table_2D ASCII);
 extern char_table ASCII_key_set_cli(char_table opt, char_table_2D ASCII);
 extern char_table_2D TYPABLE_ASCII_table();
 

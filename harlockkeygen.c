@@ -17,8 +17,10 @@ int main (int argc ,char  *argv[])
  int  n;
  int size, num;
  char_table key ,csize, cnumber;
- 
-char_table keymap= ASCII_key_set();
+
+ /* FIX: ASCII_key_set prend la table ASCII en parametre */
+ char_table_2D ASCII = TYPABLE_ASCII_table();
+ char_table keymap = ASCII_key_set(ASCII);
  
  int key_l = keymap->len;
  
@@ -45,7 +47,7 @@ char_table keymap= ASCII_key_set();
  key = key_table_create(size,size);
 
 
- srand ( time(NULL) );
+ /* srand plus necessaire: random_value utilise /dev/urandom */
  for(n=0;n<num;n++)
  {
    key_gen( key ,keymap ,size,  key_l);
@@ -54,7 +56,8 @@ char_table keymap= ASCII_key_set();
   }
 RC;
  table_destroy(key);
- table_destroy(keymap);
+ /* keymap est un element de ASCII, pas un malloc separe */
+ char_table_2D_and_char_table_destroy(ASCII);
  table_destroy(csize);
  table_destroy(cnumber);
 

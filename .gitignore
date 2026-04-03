@@ -1,0 +1,6 @@
+*.o
+*.gch
+*~
+harlockkeygen
+harlockkeygen_cli
+char_key_tools

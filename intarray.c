@@ -240,7 +240,7 @@ float intarray_average (intarray T)/* renvoi la moyenne*/
 }
 
 
-float intarray_median (intarray T)/* renvoi la mediane du tableau */ 
+float intarray_median (intarray T)/* renvoi la mediane du tableau */
 {
   intarray T2 = intarray_clone (T);
   intarray_sort1(T2);
@@ -248,12 +248,13 @@ float intarray_median (intarray T)/* renvoi la mediane du tableau */
   if(T->len % 2 == 1)
     {
   int j = T->len / 2;
-  med =intarray_get(T , j);
+  med = intarray_get(T2, j);
     }
   else
     {
-      int i = T2->data[(T2,(T->len - 1) / 2)];
-      int n = T2->data[(T2,(T->len + 1) / 2)];
+      /* FIX: comma operator bug — was (T2, index) which discards T2 */
+      int i = T2->data[(T->len - 1) / 2];
+      int n = T2->data[(T->len + 1) / 2];
       med = ((i + n) / 2.0);
     }
   intarray_destroy(T2);
@@ -279,7 +280,7 @@ intdata intarray_get_max (intarray T)/* cherche le chiffre le plus grand*/
 int intarray_num_occur(intarray T, intdata n)
 {
   int i;
-  int o ;
+  int o = 0; /* FIX: etait non initialise */
   for(i=0 ; i<T->len ; i++)
     {
       if(T->data[i]==n)
@@ -371,11 +372,10 @@ while ((*n) <= 0)
   int i;
   for(i=0;i<T->len;i++)
     {
-      if(T->data[i]=n)
+      if(T->data[i]==n) /* FIX: = etait une affectation, pas une comparaison */
 	{
-	  printf("je retourne 1");
 	  return 1;
-	    }
+	}
     }
   return 0;
 }
@@ -491,12 +491,14 @@ int premier_3(int m)
 {
   if (m == 1)
     return 0;
-  else if( m ==2 )
+  else if( m == 2 )
     return 1;
   else
     {
       int i;
-      for (i = 2 ; i < square (m) + 1 ; i++)
+      /* FIX: square(m) = m^2, beaucoup trop grand. Utilise sqrt(m) */
+      int limit = (int)sqrt((double)m) + 1;
+      for (i = 2 ; i < limit ; i++)
 	{
 	  if (m % i == 0)
 	    return 0;
@@ -640,7 +642,8 @@ heap heap_ext_create(int len)
   return j;
 }
 
-heap heap_destroy(heap* H)
+/* FIX: type retour void, pas heap */
+void heap_destroy(heap* H)
 {
   intarray_destroy(*H);
   (*H) = NULL;
@@ -798,33 +801,25 @@ int heap_get_small_child_index(heap H,int x)
 {
   if (heap_count_children(H, x) == 1)
     return heap_left_child_index(x);
+
+  /* FIX: simplifie les deux if en if/else pour garantir un return */
+  if (intarray_get(H,heap_left_child_index(x)) > intarray_get(H,heap_right_child_index(x)))
+    return heap_right_child_index(x);
   else
-    {
-      if (intarray_get(H,heap_left_child_index(x)) > (intarray_get(H,heap_right_child_index(x))))
-	return heap_right_child_index(x);
-  
-      if (intarray_get(H,heap_left_child_index(x)) <= (intarray_get(H,heap_right_child_index(x))))
-	{
-	  return heap_left_child_index(x);
-	}
-    }
- }
+    return heap_left_child_index(x);
+}
 
 int heap_get_big_child_index(heap H,int x)
 {
   if (heap_count_children(H, x) == 1)
     return heap_left_child_index(x);
+
+  /* FIX: simplifie les deux if en if/else pour garantir un return */
+  if (intarray_get(H,heap_left_child_index(x)) < intarray_get(H,heap_right_child_index(x)))
+    return heap_right_child_index(x);
   else
-    {
-      if (intarray_get(H,heap_left_child_index(x)) < (intarray_get(H,heap_right_child_index(x))))
-	return heap_right_child_index(x);
-  
-      if (intarray_get(H,heap_left_child_index(x)) >= (intarray_get(H,heap_right_child_index(x))))
-	{
-	  return heap_left_child_index(x);
-	}
-    }
- }
+    return heap_left_child_index(x);
+}
 
 bool heap_is_parent_smaller(heap H, int x)
 {

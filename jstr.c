@@ -458,7 +458,7 @@ float jstr_average (jstr T)/* renvoi la moyenne*/
 }
 
 
-float jstr_median (jstr T)/* renvoi la mediane du tableau */ 
+float jstr_median (jstr T)/* renvoi la mediane du tableau */
 {
   jstr T2 = jstr_clone (T);
   jstr_sort1(T2);
@@ -466,12 +466,13 @@ float jstr_median (jstr T)/* renvoi la mediane du tableau */
   if(T->len % 2 == 1)
     {
   int j = T->len / 2;
-  med =jstr_get(T , j);
+  med = jstr_get(T2, j);
     }
   else
     {
-      int i = T2->data[(T2,(T->len - 1) / 2)];
-      int n = T2->data[(T2,(T->len + 1) / 2)];
+      /* FIX: comma operator bug */
+      int i = T2->data[(T->len - 1) / 2];
+      int n = T2->data[(T->len + 1) / 2];
       med = ((i + n) / 2.0);
     }
   jstr_destroy(T2);
@@ -497,7 +498,7 @@ chardata jstr_get_max (jstr T)/* cherche le chiffre le plus grand*/
 int jstr_num_occur(jstr T, chardata n)
 {
   int i;
-  int o ;
+  int o = 0; /* FIX: etait non initialise */
   for(i=0 ; i<T->len ; i++)
     {
       if(T->data[i]==n)
@@ -529,11 +530,10 @@ jstr jstr_clone (jstr T)
   int i;
   for(i=0;i<T->len;i++)
     {
-      if(T->data[i]=n)
+      if(T->data[i]==n) /* FIX: = etait une affectation, pas une comparaison */
 	{
-	  printf("je retourne 1");
 	  return 1;
-	    }
+	}
     }
   return 0;
 }
@@ -568,7 +568,8 @@ int jstr_equal_substr_jol (jstr J1 , int S1 , int E1, jstr J2, int S2)
     return 0;
   {
   int i;
-  for(i = S1; i < len -1 ; i++)
+  /* FIX: i partait de S1, causant un double-offset avec S1+i */
+  for(i = 0; i < len ; i++)
     {
       if (J1->data[S1 + i] != J2->data[S2 + i])
 	return 0;

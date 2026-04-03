@@ -10,17 +10,12 @@
 #include <stdio.h>
 
 
-#include "intarray.h"
-
-
 #define RC printf ("\n")
 #define INTARRAY_DEFAULT_ALLOC 10
 
-#define GTRUE ((bool) 255)
-#define TRUE ((bool) 1)
-#define FALSE ((bool) 0) 
+#include <stdbool.h>
 
-typedef unsigned int bool;
+#define GTRUE ((bool) 255)
 
 typedef int intdata;
 
@@ -88,7 +83,7 @@ extern int premier_2(int m);
 extern int premier_3(int m);
 
 extern intarray args_to_intarray(int nb , char **args);
-extern intarray args_to_intarray(int from, int to , char **args);
+extern intarray args_to_intarray_2(int from, int to , char **args);
 extern intarray random_intarray(int len);
 extern intarray intarray_clone_heap_sort_by_min(intarray I);
 extern void intarray_D_heap_sort_by_min(intarray I);
@@ -98,7 +93,7 @@ extern int square (int n);
 
 extern heap heap_create_empty(int alloc);
 extern heap heap_ext_create(int len);
-extern heap heap_destroy(heap* H);
+extern void heap_destroy(heap* H);
 extern bool heap_is_empty( heap H);
 extern int heap_count_children(heap H, int i);
 extern void heap_sort_by_min(heap H, intarray I);
