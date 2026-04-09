@@ -4,3 +4,6 @@
 harlockkeygen
 harlockkeygen_cli
 char_key_tools
+*.o
+*.gch
+harlockkeygen
