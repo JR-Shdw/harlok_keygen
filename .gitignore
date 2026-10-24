@@ -1,9 +1,9 @@
+# Build artifacts
 *.o
 *.gch
-*~
+char_key_tools
 harlockkeygen
 harlockkeygen_cli
-char_key_tools
-*.o
-*.gch
-harlockkeygen
+
+# Editor backups
+*~
